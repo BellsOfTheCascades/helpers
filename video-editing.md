@@ -131,7 +131,7 @@ _Trim input.mp4 beginning at the start of the video, ending at 1 hour, 52 minute
 
 Sometimes you have multiple clips you want to combine into one.
 
-Note that generally it's useful to apply any fades to the individual clips _before_ joining, as it's much trickier to do fades in the middle of a video. Additionally, while it's possible to join videos in different orientations (portrait vs. landscape) or different sizes/resolutions, some video players and social media will react strangely so it's not recommended (see [adjusting resolution](#adjusting-resolution) for ways to normalize videos).
+Note that generally it's useful to apply any fades to the individual clips _before_ joining, as it's much trickier to do fades in the middle of a video. Additionally, while it's possible to join videos in different orientations (portrait vs. landscape) or different sizes/resolutions, some video players and social media will react strangely so it's not recommended (see [adjusting resolution](#adjusting-resolution-scaling-and-cropping-videos) for ways to normalize videos).
 
 Use [`joinvid.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/joinvid.sh) by passing a list of videos to be joined. The videos can be in any file format. The resulting file will be named `joined.mp4`.
 
@@ -149,7 +149,7 @@ or joining five:
 
 #### Troubleshooting
 
-If joining videos doesn't work -- if you get error messages, or the joined video appears to only contain one of the videos -- you may have videos at differing resolutions. See [adjusting resolution](#adjusting-resolution) for help with this.
+If joining videos doesn't work -- if you get error messages, or the joined video appears to only contain one of the videos -- you may have videos at differing resolutions. See [adjusting resolution](#adjusting-resolution-scaling-and-cropping-videos) for help with this.
 
 You can try using [FFmpeg's concat protocol with intermediate files](https://trac.ffmpeg.org/wiki/Concatenate), but it doesn't always work and may still result in a joined video that doesn't process well on social media.
 
