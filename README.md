@@ -11,3 +11,4 @@ Posted publicly in case they are of use to anyone else; please copy and re-use f
 ---
 
 - [Tips and tools for formatting and printing concert program PDFs](program-pdf.md)
+- [Video editing: Trims, fades and overlays](video-editing.md)
