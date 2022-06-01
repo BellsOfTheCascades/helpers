@@ -153,6 +153,12 @@ If joining videos doesn't work -- if you get error messages, or the joined video
 
 You can try using [FFmpeg's concat protocol with intermediate files](https://trac.ffmpeg.org/wiki/Concatenate), but it doesn't always work and may still result in a joined video that doesn't process well on social media.
 
+More successfully, you can use [FFmpeg's 'Concatenation of files with different codecs'](https://trac.ffmpeg.org/wiki/Concatenate) -- and remember that filename doesn't necessarily reflect codec, so even two `mp4` files can be encoded differently. The videos will need to have the same resolution. For instance, this command will work to join two videos with different encodings:
+
+```sh
+ffmpeg -i <input1.mp4> -i <input2.mp4> -filter_complex "[0:v:0][0:a:0][1:v:0][1:a:0]concat=n=2:v=1:a=1[outv][outa]" -map "[outv]" -map "[outa]" <output.mp4>
+```
+
 ### Adjusting resolution (scaling and cropping videos)
 
 In general you'll probably want the highest-resolution version of the video possible -- that is, the resolution you get right out of the camera. If you need to save filesize, however, or you're trying to join two videos that have different resolutions, you might need to downscale or resize one of them.
