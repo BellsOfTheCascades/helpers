@@ -44,7 +44,7 @@ Most videos will come to you in `.mp4` format, which is what you want, as it's t
 
 If you get videos in any other format, FFmpeg should have no trouble converting them, using [`convertvid.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/convertvid.sh):
 
-`convertvid.sh <input.mp4>`
+`./convertvid.sh <input.mp4>`
 
 ### Rotating a video
 
@@ -90,4 +90,38 @@ ffmpeg -i <input.mp4> -vf "transpose=1,transpose=1,transpose=1" <output.mp4>
 
 (`transpose` can take other values, but they can be hard to visualize. In brief, a value of `0` rotates counter-clockwise and flips the video vertically, `2` rotates counter-clockwise but does not flip, and `3` rotates clockwise and flips.)
 
+### Trimming a video
 
+In most situations, you'll have portions of a video you want to cut off from the beginning and end of a file. You may also want to take a single file and divide it into multiple files.
+
+When trimming, it's important to keep two things in mind:
+
+- **Trim to the _audio length_ that you want, not the video length.** If you are going to later add overlays or fade to black, you (generally) want the audio to continue "behind" that transition. To keep things simple, account for that extra bit when you're first trimming the file.
+- **Provide enough at the beginning and end for fades.** The default fade-in and fade-out of both audio and video is 5 seconds, although that can be adjusted. Whatever amount you expect to use, make sure to include it when you trim.
+
+We're going to use [`trimvid.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/trimvid.sh) for the trimming, which takes four values: The input filename, the start position, the end position, and the output filename.
+
+- The output filename is optional; if omitted then it simply creates a file with "-trim" appended to the input filename.
+- The end position is also optional; if omitted it will run to the end of the video.
+- For the start and end positions, you can enter it as a number of seconds (e.g. `30` for half a minute; `90` for a minute and a half) or in the format `HH:MM:SS` (e.g. for 2 minutes 38 seconds it would be `00:02:38`).
+- If you want to start at the beginning of the video, enter a start position of `0`.
+
+View your video file and determine what you want the start and end positions to be. Here are some examples:
+
+_Trim input.mp4 beginning at 1 minute, 29 seconds to the end of the video:_
+
+```sh
+./trimvid.sh <input.mp4> 00:01:29
+```
+
+_Trim input.mp4 beginning at 1 minute, 29 seconds and lasting for 90 seconds (one and a half minutes):_
+
+```sh
+./trimvid.sh <input.mp4> 00:01:29 90
+```
+
+_Trim input.mp4 beginning at the start of the video, ending at 1 hour, 52 minutes, 56 seconds, and name the video "final.mp4":_
+
+```sh
+./trimvid.sh <input.mp4> 0 01:52:56 <final.mp4>
+```
