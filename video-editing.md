@@ -32,6 +32,8 @@ and you have a file called `video-22.mp4`, and want to end up with a new file ca
 script.sh -i video-22.mp4 -o video-22_edited.mp4
 ```
 
+If a command specifies separate `<input.mp4>` and `<output.mp4>` values, then **do not try to overwrite the input file** by providing the same filename in both places. FFmpeg streams videos and can't overwrite a file while simultaneously reading it. You can always delete the original file once you're done.
+
 ## Basic edits
 
 Sometimes the videos that come in need to be manipulated before you start. Here are some basic edits:
@@ -48,8 +50,44 @@ If you get videos in any other format, FFmpeg should have no trouble converting 
 
 Video (and image) rotation states can be confusing; often smartphone cameras will set a rotation position in the file's metadata without actually rotating the pixels themselves. If you're seeing media rotated on some devices or in some situations but not others, this is probably what's going on.
 
-This command will rotate the video 90 degrees clockwise:
+#### 1. Determine if rotation metadata exists, and remove it
+
+Viewing and rewriting metadata are quick commands that do not require the entire video to be read or re-encoded. To view the rotation metadata, use the following command (`ffprobe` is a part of `ffmpeg`):
+
+```sh
+ffprobe -loglevel error -select_streams v:0 -show_entries stream_tags=rotate -of default=nw=1:nk=1 -i <input.mp4>
+```
+
+If nothing gets displayed, there is no rotation metadata and you can move on to the next step.
+
+If there is rotation data, you'll simply see a number returned, like `90` or `180`. It's best to remove the rotation metadata to ensure the video won't show up "extra rotated" on some devices once you're done. To remove the metadata, run:
+
+```sh
+ffmpeg -i <input.mp4> -metadata:s:v rotate="0" -c copy <output.mp4>
+```
+
+#### 2. Rotate the video
+
+The command you enter will depend on to what extent the video is rotated. FFmpeg will need to re-encode the file in order to rotate it, so this will take a few moments depending on the length of the video.
+
+To rotate the video 90 degrees clockwise:
 
 ```sh
 ffmpeg -i <input.mp4> -vf "transpose=1" <output.mp4>
 ```
+
+To rotate 180 degrees clockwise:
+
+```sh
+ffmpeg -i <input.mp4> -vf "transpose=1,transpose=1" <output.mp4>
+```
+
+And to rotate 270 degrees clockwise:
+
+```sh
+ffmpeg -i <input.mp4> -vf "transpose=1,transpose=1,transpose=1" <output.mp4>
+```
+
+(`transpose` can take other values, but they can be hard to visualize. In brief, a value of `0` rotates counter-clockwise and flips the video vertically, `2` rotates counter-clockwise but does not flip, and `3` rotates clockwise and flips.)
+
+
