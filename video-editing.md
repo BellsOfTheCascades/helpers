@@ -97,7 +97,7 @@ In most situations, you'll have portions of a video you want to cut off from the
 When trimming, it's important to keep two things in mind:
 
 - **Trim to the _audio length_ that you want, not the video length.** If you are going to later add overlays or fade to black, you (generally) want the audio to continue "behind" that transition. To keep things simple, account for that extra bit when you're first trimming the file.
-- **Provide enough at the beginning and end for fades.** The default fade-in and fade-out of both audio and video is 5 seconds, although that can be adjusted. Whatever amount you expect to use, make sure to include it when you trim.
+- **Provide enough at the beginning and end for fades.** Most videos have fade-in and fade-out of both the audio and video for a smooth effect. Whatever amount of time you expect to use (usually 2-5 seconds), make sure to account for it when you trim.
 
 We're going to use [`trimvid.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/trimvid.sh) for the trimming, which takes four values: The input filename, the start position, the end position, and the output filename.
 
@@ -173,4 +173,4 @@ But if you already know how long you want the fade to be, you can provide that a
 > Done. Video created at input-faded.mp4
 ```
 
-FFmpeg will need to re-encode the file in order to add the fades, so this will take a few moments depending on the length of the video.
+FFmpeg will need to re-encode both video and audio to apply the fades, so this will take some time. The output video will automatically be the name of the input video with "-faded" appended.
