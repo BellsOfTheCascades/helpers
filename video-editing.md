@@ -101,12 +101,13 @@ When trimming, it's important to keep two things in mind:
 
 We're going to use [`trimvid.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/trimvid.sh) for the trimming, which takes four values: The input filename, the start position, the end position, and the output filename.
 
-- The output filename is optional; if omitted then it simply creates a file with "-trim" appended to the input filename.
-- The end position is also optional; if omitted it will run to the end of the video.
+- Note that what the script is looking for are _start and end positions_ and not _duration of the clip_.
+- The end position is optional; if omitted it will run to the end of the video.
 - For the start and end positions, you can enter it as a number of seconds (e.g. `30` for half a minute; `90` for a minute and a half) or in the format `HH:MM:SS` (e.g. for 2 minutes 38 seconds it would be `00:02:38`).
 - If you want to start at the beginning of the video, enter a start position of `0`.
+- The output filename is optional; if omitted then it simply creates a file with "-trim" appended to the input filename.
 
-View your video file and determine what you want the start and end positions to be. Here are some examples:
+View your video file and determine what you want the start and end positions to be. Here are some examples.
 
 _Trim input.mp4 beginning at 1 minute, 29 seconds to the end of the video:_
 
