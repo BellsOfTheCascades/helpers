@@ -146,3 +146,31 @@ or joining five:
 ```sh
 ./joinvid.sh <input1.mp4> <input2.mp4> <input3.mp4> <input4.mp4> <input5.mp4>
 ```
+
+## Video effects
+
+### Fading in and out of a video
+
+Fading involves both the video and audio of a file. While it's possible to fade each separately and to do different amounts of fade at the beginning and end, to make things simpler we do both audio and video at both the start and end.
+
+[`fadevid.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/fadevid.sh) takes a filename, and optionally an amount of time for the fade.
+
+If you don't provide an amount of time, the script will ask you:
+
+```sh
+./fadevid.sh <input.mp4>
+> Video length is 122.029413 seconds. How long do you want each fade to last? (in seconds)
+5
+> [ffmpeg reports conversion progress]
+> Done. Video created at input-faded.mp4
+```
+
+But if you already know how long you want the fade to be, you can provide that amount in seconds, with the filename:
+
+```sh
+./fadevid.sh --time=5 <input.mp4>
+> [ffmpeg reports conversion progress]
+> Done. Video created at input-faded.mp4
+```
+
+FFmpeg will need to re-encode the file in order to add the fades, so this will take a few moments depending on the length of the video.
