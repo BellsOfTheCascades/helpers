@@ -126,3 +126,23 @@ _Trim input.mp4 beginning at the start of the video, ending at 1 hour, 52 minute
 ```sh
 ./trimvid.sh <input.mp4> 0 01:52:56 <final.mp4>
 ```
+
+### Joining videos
+
+Sometimes you have multiple clips you want to combine into one.
+
+Note that generally it's useful to apply any fades to the individual clips _before_ joining, as it's much trickier to do fades in the middle of a video. Additionally, while it's possible to join videos in different orientations (portrait vs. landscape) some video players and social media will react strangely so it's not recommended.
+
+Use [`joinvid.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/joinvid.sh) by passing a list of videos to be joined. The videos can be in any file format. The resulting file will be named `joined.mp4`.
+
+For example, joining two videos:
+
+```sh
+./joinvid.sh <input1.mp4> <input2.mp4>
+```
+
+or joining five:
+
+```sh
+./joinvid.sh <input1.mp4> <input2.mp4> <input3.mp4> <input4.mp4> <input5.mp4>
+```
