@@ -131,7 +131,7 @@ _Trim input.mp4 beginning at the start of the video, ending at 1 hour, 52 minute
 
 Sometimes you have multiple clips you want to combine into one.
 
-Note that generally it's useful to apply any fades to the individual clips _before_ joining, as it's much trickier to do fades in the middle of a video. Additionally, while it's possible to join videos in different orientations (portrait vs. landscape) some video players and social media will react strangely so it's not recommended.
+Note that generally it's useful to apply any fades to the individual clips _before_ joining, as it's much trickier to do fades in the middle of a video. Additionally, while it's possible to join videos in different orientations (portrait vs. landscape) or different sizes/resolutions, some video players and social media will react strangely so it's not recommended (see [adjusting resolution](#adjusting-resolution) for ways to normalize videos).
 
 Use [`joinvid.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/joinvid.sh) by passing a list of videos to be joined. The videos can be in any file format. The resulting file will be named `joined.mp4`.
 
@@ -146,6 +146,36 @@ or joining five:
 ```sh
 ./joinvid.sh <input1.mp4> <input2.mp4> <input3.mp4> <input4.mp4> <input5.mp4>
 ```
+
+#### Troubleshooting
+
+If joining videos doesn't work -- if you get error messages, or the joined video appears to only contain one of the videos -- you may have videos at differing resolutions. See [adjusting resolution](#adjusting-resolution) for help with this.
+
+You can try using [FFmpeg's concat protocol with intermediate files](https://trac.ffmpeg.org/wiki/Concatenate), but it doesn't always work and may still result in a joined video that doesn't process well on social media.
+
+### Adjusting resolution (scaling and cropping videos)
+
+In general you'll probably want the highest-resolution version of the video possible -- that is, the resolution you get right out of the camera. If you need to save filesize, however, or you're trying to join two videos that have different resolutions, you might need to downscale or resize one of them.
+
+First, to determine the size of a video, use `ffprobe` (part of FFmpeg):
+
+```sh
+ffprobe -v quiet -print_format json -show_format -show_streams <input.mp4> | grep "\"width\"|\"height\""
+```
+
+To scale (keep the aspect ratio of) a video, use the following command, replacing `width` and `height` appropriately:
+
+```sh
+ffmpeg -i <input.mp4> -vf scale=width:height,setsar=1:1 <output.mp4>
+```
+
+To crop a video (for instance if you have two different aspect ratios in videos you're trying to join) first scale to the closest width or height value. Then use this command, replacing `width`, `height`, `x` and `y` (the starting positions, with `0:0` being top left):
+
+```sh
+ffmpeg -i <input.mp4> -filter:v "crop=width:height:x:y" <output.mp4>
+```
+
+For details about cropping with FFmpeg, [see this excellent guide](https://www.linuxuprising.com/2020/01/ffmpeg-how-to-crop-videos-with-examples.html).
 
 ## Video effects
 
