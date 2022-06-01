@@ -151,7 +151,7 @@ or joining five:
 
 ### Fading in and out of a video
 
-Fading involves both the video and audio of a file. While it's possible to fade each separately and to do different amounts of fade at the beginning and end, to make things simpler we do both audio and video at both the start and end.
+Fading involves both the video and audio of a file. While it's possible to fade each separately and to do different amounts of fade at the beginning and end, the most straightforward approach is to apply the same amount to both audio and video at both the start and end.
 
 [`fadevid.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/fadevid.sh) takes a filename, and optionally an amount of time for the fade.
 
@@ -174,3 +174,17 @@ But if you already know how long you want the fade to be, you can provide that a
 ```
 
 FFmpeg will need to re-encode both video and audio to apply the fades, so this will take some time. The output video will automatically be the name of the input video with "-faded" appended.
+
+#### Fine-tuning fades
+
+If you want to apply differing amounts of fades to the audio and video, and/or to the start and end of the clip, you can use FFmpeg directly. The syntax is:
+
+```sh
+ffmpeg -i <input.mp4> -vf fade=t=in:st=[starttime]:d=[duration] -af afade=t=in:st=[starttime]:d=[duration] fade=t=out:st=[starttime]:d=[duration] -af afade=t=out:st=[starttime]:d=[duration] <output.mp4>
+```
+
+`[starttime]` and `[duration]` are specified in seconds. So, for instance, to set a video fade-in of 5 seconds, an audio fade-in of 2 seconds, a video fade-out of 10 seconds and an audio fade-out of 1 second you would do the following for a 64-second video (note you'll have to compute the fade-out start times yourself!):
+
+```sh
+ffmpeg -i <input.mp4> -vf fade=t=in:st=0:d=5 -af afade=t=in:st=0:d=2 fade=t=out:st=54:d=10 -af afade=t=out:st=63:d=1 <output.mp4>
+```
