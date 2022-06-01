@@ -224,3 +224,26 @@ ffmpeg -i <input.mp4> -vf fade=t=in:st=[starttime]:d=[duration] -af afade=t=in:s
 ```sh
 ffmpeg -i <input.mp4> -vf fade=t=in:st=0:d=5 -af afade=t=in:st=0:d=2 fade=t=out:st=54:d=10 -af afade=t=out:st=63:d=1 <output.mp4>
 ```
+
+### Adding an image overlay
+
+#### Watermarks
+
+All Bells of the Cascades videos should have a watermark of the BOC logo. There are [several sizes of the circular logo](https://github.com/BellsOfTheCascades/helpers/tree/main/images) that you can use depending on the resolution of your video. (Higher-resolution videos need larger watermark images to fill the same amount of proportional space.)
+
+[`markvid.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/markvid.sh) is designed just for that. The script takes three parameters: The path to the video, the path to the watermark image, and the distance (in pixels) from the lower-right corner:
+
+```sh
+./markvid.sh <input.mp4> <watermark.png> PIXELDIST
+```
+
+For instance, to apply [`boc-logo-circular_100.png`](https://github.com/BellsOfTheCascades/helpers/blob/main/images/boc-logo-circular_100.png) to `video.mp4` with a margin of 10 pixels, you'd use this command:
+
+```sh
+./markvid.sh video.mp4 watermark.png 10
+```
+
+You will probably have to test out which watermark and margin work best for a given video a few times.
+
+Generally watermarks should be transparent (unless you want a rectangular watermark), so PNG files work best.
+
