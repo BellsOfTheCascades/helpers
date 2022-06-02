@@ -332,6 +332,29 @@ You can play with the size (`fontsize`) and positioning (`x`, `y`) to achieve th
 
 Here's [a good guide on `drawtext`](https://ottverse.com/ffmpeg-drawtext-filter-dynamic-overlays-timecode-scrolling-text-credits/) and [a more complex example](https://www.ffmpegbyexample.com/examples/50gowmkq/fade_in_and_out_text_using_the_drawtext_filter/).
 
+## Testing advanced video filters
+
+Whenever using FFmpeg directly with a command like `ffmpeg -i <input.mp4> -vf...` or `ffmpeg -i <input.mp4> -filter_complex...`, you can test the effects of what you're doing without re-encoding the entire video by using `ffplay`.
+
+Unfortunately, the syntax for `ffplay` is structured a little differently than `ffmpeg`, so you can't simply drop in one for the other. If you have a command like this:
+
+```sh
+ffmpeg -i <input.mp4> \
+-vf "drawtext=fontfile=path/to/font.ttf:text='www.BellsOfTheCascades.org':fontcolor=white:fontsize=150:x=(w-text_w)/2:y=h-th-250:enable='between(t,46,49)'" -\
+codec:a copy \
+<output.mp4>
+```
+
+The corresponding `ffplay` command to test it would be:
+
+```sh
+ffplay \
+-vf "drawtext=fontfile=path/to/font.ttf:text='www.BellsOfTheCascades.org':fontcolor=white:fontsize=150:x=(w-text_w)/2:y=h-th-250:enable='between(t,46,49)'" \
+<input.mp4>
+```
+
+Essentially you put the filters (and any other operations) first, and move the reference to the input file to the end of the command. There is no output file; instead the video will simply play on your screen.
+
 ## Cleanup
 
 ### Minimizing video file size
