@@ -38,6 +38,38 @@ If a command specifies separate `<input.mp4>` and `<output.mp4>` values, then **
 
 Sometimes the videos that come in need to be manipulated before you start. Here are some basic edits:
 
+### Determining video resolution and other details
+
+`ffprobe` is a part of FFmpeg, and allows you to analyze a video file for details. The basic usage is:
+
+```sh
+ffprobe -v quiet -print_format json -show_format -show_streams <input.mp4>
+```
+
+This will show you _a lot_ of information, so you may want to use `grep` to pull out just the information you need. For instance, to get the width and height (resolution) of the video:
+
+```sh
+ffprobe -v quiet -print_format json -show_format -show_streams \
+<input.mp4> \
+| grep "\"width\"|\"height\""
+```
+
+To get the encoding information from the file (video encoding listed first, audio encoding listed second):
+
+```sh
+ffprobe -v quiet -print_format json -show_format -show_streams \
+<input.mp4> \
+| grep "codec"
+```
+
+And to get details on the file format:
+
+```sh
+ffprobe -v quiet -print_format json -show_format -show_streams \
+<input.mp4> \
+| grep "format"
+```
+
 ### Converting a video format
 
 Most videos will come to you in `.mp4` format, which is what you want, as it's the most balanced in terms of being widely (basically universally) supported while maintaining a small filesize.
@@ -45,6 +77,8 @@ Most videos will come to you in `.mp4` format, which is what you want, as it's t
 If you get videos in any other format, FFmpeg should have no trouble converting them, using [`convertvid.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/convertvid.sh):
 
 `./convertvid.sh <input.mp4>`
+
+Note that "format" and "encoding" are not necessarily the same thing, for instance Apple Quicktime Movies (the default export from an iPhone) can be saved as `.mp4`, `.mov` or other file extensions.
 
 ### Rotating a video
 
