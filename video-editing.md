@@ -311,3 +311,27 @@ part2-faded-overlaid.mp4
 You can play with the size (`fontsize`) and positioning (`x`, `y`) to achieve the effect you want. If you want to have the text appear for the full duration of the video, leave off the `:enable='...'` portion.
 
 Here's [a good guide on `drawtext`](https://ottverse.com/ffmpeg-drawtext-filter-dynamic-overlays-timecode-scrolling-text-credits/) and [a more complex example](https://www.ffmpegbyexample.com/examples/50gowmkq/fade_in_and_out_text_using_the_drawtext_filter/).
+
+## Cleanup
+
+### Minimizing video file size
+
+Again, generally you want to prioritize video quality over file size, but if you want to archive things without losing too much quality, use [`minvid.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/minvid.sh), which re-encodes the video using a modern format and strips all metadata.
+
+```sh
+./minvid.sh <input.mp4>
+```
+
+### Creating a video image or screenshot
+
+[`vidcap.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/vidcap.sh) will take an image of the video at full resolution from the exact middle (by time code):
+
+```sh
+./vidcap.sh <input.mp4>
+```
+
+You can also create a montage of images, sometimes called screen caps, vidcaps or a contact sheet. For instance, this creates a montage of 3 images spread across the video, excluding the beginning and end (where fades might occur and thus have little image data):
+
+```sh
+./vidcap.sh -o -n <input.mp4> 3
+```
