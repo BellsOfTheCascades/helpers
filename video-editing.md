@@ -211,6 +211,8 @@ ffmpeg -i <input.mp4> \
 <output.mp4>
 ```
 
+You can [test the values using `ffplay`](#testing-advanced-video-filters).
+
 To crop a video (for instance if you have two different aspect ratios in videos you're trying to join) first scale to the closest width or height value. Then use this command, replacing `width`, `height`, `x` and `y` (the starting positions, with `0:0` being top left):
 
 ```sh
@@ -218,6 +220,8 @@ ffmpeg -i <input.mp4> \
 -filter:v "crop=width:height:x:y" \
 <output.mp4>
 ```
+
+Again, you can [test your values using `ffplay`](#testing-advanced-video-filters).
 
 For details about cropping with FFmpeg, [see this excellent guide](https://www.linuxuprising.com/2020/01/ffmpeg-how-to-crop-videos-with-examples.html).
 
@@ -273,6 +277,8 @@ fade=t=out:st=54:d=10 \
 <output.mp4>
 ```
 
+You can [test your fade using `ffplay`](#testing-advanced-video-filters).
+
 ### Adding an image overlay
 
 #### Watermarks
@@ -311,6 +317,8 @@ ffmpeg -i video.mp4 -loop 1 \
 video-with-overlay.mp4
 ```
 
+You can [test your overlay using `ffplay`](#testing-advanced-video-filters).
+
 Using FFmpeg's `main_w-overlay` and `main_h-overlay` values allows us to position the image in the center automatically, so you could also use this to overlay an image in the center that does not fully cover the video.
 
 There are ways to fade-in and fade-out overlays, as well as applying overlays without transparency (like JPEGs) but the syntax starts to get complicated. Some examples: [1](https://stackoverflow.com/questions/38633369/how-to-add-a-fade-in-within-overlay-with-ffmpeg) [2](https://gist.github.com/sevitz/7872378), [3](https://stackoverflow.com/questions/72014088/ffmpeg-lavfi-is-it-possible-to-fade-out-an-image-overlay-that-was-loaded-with-a), [4](https://superuser.com/questions/881002/how-can-i-avoid-a-black-background-when-fading-in-an-overlay-with-ffmpeg), [5](https://superuser.com/questions/1201524/ffmpeg-overlay-image-on-video-with-fade-effect)
@@ -328,7 +336,9 @@ codec:a copy \
 part2-faded-overlaid.mp4
 ```
 
-You can play with the size (`fontsize`) and positioning (`x`, `y`) to achieve the effect you want. If you want to have the text appear for the full duration of the video, leave off the `:enable='...'` portion.
+You can play with the size (`fontsize`) and positioning (`x`, `y`) to achieve the effect you want [by using `ffplay`](#testing-advanced-video-filters).
+
+If you want to have the text appear for the full duration of the video, leave off the `:enable='...'` portion.
 
 Here's [a good guide on `drawtext`](https://ottverse.com/ffmpeg-drawtext-filter-dynamic-overlays-timecode-scrolling-text-credits/) and [a more complex example](https://www.ffmpegbyexample.com/examples/50gowmkq/fade_in_and_out_text_using_the_drawtext_filter/).
 
@@ -355,7 +365,31 @@ ffplay \
 
 Essentially you put the filters (and any other operations) first, and move the reference to the input file to the end of the command. There is no output file; instead the video will simply play on your screen.
 
-## Cleanup
+## Finishing up
+
+You may want to rename, or save a copy, of the final version of your video by appending "-final" to the filename so that when you come back to it in 6 months or 6 years, you don't have to figure it out. You may also want to keep a record of the commands you run (especially custom fades, overlays, or adding text) if you're working on a video series or otherwise think you might want to have a similar-looking video in the future.
+
+### Creating a video image or screenshot
+
+Social media systems will generate automatic thumbnail images when you upload a video, sometimes giving you a choice. But most platforms also allow you to upload a custom image to use as your thumbnail. If you don't already have a "cover image" (such as a slide overlay), you can take your own video screenshots with [`vidcap.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/vidcap.sh).
+
+Running it with no arguments will take an image of the video at full resolution from the exact middle (by time code):
+
+```sh
+./vidcap.sh <input.mp4>
+```
+
+If you want a selection of images to choose from, add a number to the end of the command and you'll get that many screenshots, spread evenly across the length of the video:
+
+```sh
+./vidcap.sh <input.mp4> 15
+```
+
+You can also create a montage of images, sometimes called contact sheets or screen-caps. For instance, this creates a montage of 5 images spread across the video, excluding the beginning and end (where fades might occur and thus have little image data):
+
+```sh
+./vidcap.sh -o -n <input.mp4> 5
+```
 
 ### Minimizing video file size
 
@@ -365,16 +399,4 @@ Again, generally you want to prioritize video quality over file size, but if you
 ./minvid.sh <input.mp4>
 ```
 
-### Creating a video image or screenshot
-
-[`vidcap.sh`](https://github.com/rootwork/bash-scripts/blob/main/videos/vidcap.sh) will take an image of the video at full resolution from the exact middle (by time code):
-
-```sh
-./vidcap.sh <input.mp4>
-```
-
-You can also create a montage of images, sometimes called screen caps, vidcaps or a contact sheet. For instance, this creates a montage of 3 images spread across the video, excluding the beginning and end (where fades might occur and thus have little image data):
-
-```sh
-./vidcap.sh -o -n <input.mp4> 3
-```
+You could also [directly adjust the video resolution](#adjusting-resolution-scaling-and-cropping-videos) in order to achieve a smaller file size.
