@@ -248,3 +248,37 @@ For instance, to apply [`boc-logo-circular_100.png`](https://github.com/BellsOfT
 You will probably have to test out which watermark and margin work best for a given video a few times.
 
 Generally watermarks should be transparent (unless you want a rectangular watermark), so PNG files work best.
+
+#### Full-video image overlays
+
+You may want to create an overlay that covers the full video screen (while audio is playing). To do this, first determine the dimensions of your video:
+
+```sh
+ffprobe -v quiet -print_format json -show_format -show_streams <input.mp4> | grep "\"width\"|\"height\""
+```
+
+This will tell you the dimensions of the image you need to create, which should be a PNG.
+
+Then use FFmpeg to apply the image to the portion of the video you want to cover. For instance, to apply `slide.png` to `video.mp4` from 55 seconds to 1 minute 3 seconds, fading in for 1 second and out for 2 seconds (for a total of 8 seconds), you would use this command:
+
+```sh
+ffmpeg -i video.mp4 -loop 1 -t 8 -i slide.png -filter_complex "[0:v][1:v] overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable=between(t\,52\,57)" video-with-overlay.mp4
+```
+
+Using FFmpeg's `main_w-overlay` and `main_h-overlay` values allows us to position the image in the center automatically, so you could also use this to overlay an image in the center that does not fully cover the video.
+
+There are ways to fade-in and fade-out overlays, as well as applying overlays without transparency (like JPEGs) but the syntax starts to get complicated. Some examples: [1](https://stackoverflow.com/questions/38633369/how-to-add-a-fade-in-within-overlay-with-ffmpeg) [2](https://gist.github.com/sevitz/7872378), [3](https://stackoverflow.com/questions/72014088/ffmpeg-lavfi-is-it-possible-to-fade-out-an-image-overlay-that-was-loaded-with-a), [4](https://superuser.com/questions/881002/how-can-i-avoid-a-black-background-when-fading-in-an-overlay-with-ffmpeg), [5](https://superuser.com/questions/1201524/ffmpeg-overlay-image-on-video-with-fade-effect)
+
+#### Adding text overlays
+
+Instead of using images, you can write text directly onto the video.
+
+For instance, to write `www.BellsOfTheCascades.org` using the BOC font, onto `video.mp4` between 30 seconds and 40 seconds, you would use this command, where `path/to/font.ttf` is the full path to the font file on your system:
+
+```sh
+ffmpeg -i video.mp4 -vf "drawtext=fontfile=path/to/font.ttf:text='www.BellsOfTheCascades.org':fontcolor=white:fontsize=150:x=(w-text_w)/2:y=h-th-250:enable='between(t,46,49)'" -codec:a copy part2-faded-overlaid.mp4
+```
+
+You can play with the size (`fontsize`) and positioning (`x`, `y`) to achieve the effect you want. If you want to have the text appear for the full duration of the video, leave off the `:enable='...'` portion.
+
+Here's [a good guide on `drawtext`](https://ottverse.com/ffmpeg-drawtext-filter-dynamic-overlays-timecode-scrolling-text-credits/) and [a more complex example](https://www.ffmpegbyexample.com/examples/50gowmkq/fade_in_and_out_text_using_the_drawtext_filter/).
