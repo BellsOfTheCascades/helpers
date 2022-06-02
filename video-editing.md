@@ -201,13 +201,7 @@ ffmpeg \
 
 In general you'll probably want the highest-resolution version of the video possible -- that is, the resolution you get right out of the camera. If you need to save filesize, however, or you're trying to join two videos that have different resolutions, you might need to downscale or resize one of them.
 
-First, to determine the size of a video, use `ffprobe` (part of FFmpeg):
-
-```sh
-ffprobe -v quiet -print_format json -show_format -show_streams \
-<input.mp4> \
-| grep "\"width\"|\"height\""
-```
+First [determine the size of a video](#determining-video-resolution-and-other-details).
 
 To scale (keep the aspect ratio of) a video, use the following command, replacing `width` and `height` appropriately:
 
@@ -305,15 +299,7 @@ Generally watermarks should be transparent (unless you want a rectangular waterm
 
 #### Full-video image overlays
 
-You may want to create an overlay that covers the full video screen (while audio is playing). To do this, first determine the dimensions of your video:
-
-```sh
-ffprobe -v quiet -print_format json -show_format -show_streams \
-<input.mp4> \
-| grep "\"width\"|\"height\""
-```
-
-This will tell you the dimensions of the image you need to create, which should be a PNG.
+You may want to create an overlay that covers the full video screen (while audio is playing). To do this, first [determine the dimensions of your video](#determining-video-resolution-and-other-details). This will tell you the size of the image you need to create, which should be a PNG.
 
 Then use FFmpeg to apply the image to the portion of the video you want to cover. For instance, to apply `slide.png` to `video.mp4` from 55 seconds to 1 minute 3 seconds, fading in for 1 second and out for 2 seconds (for a total of 8 seconds), you would use this command:
 
