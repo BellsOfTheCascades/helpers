@@ -156,7 +156,11 @@ You can try using [FFmpeg's concat protocol with intermediate files](https://tra
 More successfully, you can use [FFmpeg's 'Concatenation of files with different codecs'](https://trac.ffmpeg.org/wiki/Concatenate) -- and remember that filename doesn't necessarily reflect codec, so even two `mp4` files can be encoded differently. The videos will need to have the same resolution. For instance, this command will work to join two videos with different encodings:
 
 ```sh
-ffmpeg -i <input1.mp4> -i <input2.mp4> -filter_complex "[0:v:0][0:a:0][1:v:0][1:a:0]concat=n=2:v=1:a=1[outv][outa]" -map "[outv]" -map "[outa]" <output.mp4>
+ffmpeg \
+-i <input1.mp4> -i <input2.mp4> \
+-filter_complex "[0:v:0][0:a:0][1:v:0][1:a:0]concat=n=2:v=1:a=1[outv][outa]" \
+ -map "[outv]" -map "[outa]" \
+<output.mp4>
 ```
 
 ### Adjusting resolution (scaling and cropping videos)
@@ -166,19 +170,25 @@ In general you'll probably want the highest-resolution version of the video poss
 First, to determine the size of a video, use `ffprobe` (part of FFmpeg):
 
 ```sh
-ffprobe -v quiet -print_format json -show_format -show_streams <input.mp4> | grep "\"width\"|\"height\""
+ffprobe -v quiet -print_format json -show_format -show_streams \
+<input.mp4> \
+| grep "\"width\"|\"height\""
 ```
 
 To scale (keep the aspect ratio of) a video, use the following command, replacing `width` and `height` appropriately:
 
 ```sh
-ffmpeg -i <input.mp4> -vf scale=width:height,setsar=1:1 <output.mp4>
+ffmpeg -i <input.mp4> \
+-vf scale=width:height,setsar=1:1 \
+<output.mp4>
 ```
 
 To crop a video (for instance if you have two different aspect ratios in videos you're trying to join) first scale to the closest width or height value. Then use this command, replacing `width`, `height`, `x` and `y` (the starting positions, with `0:0` being top left):
 
 ```sh
-ffmpeg -i <input.mp4> -filter:v "crop=width:height:x:y" <output.mp4>
+ffmpeg -i <input.mp4> \
+-filter:v "crop=width:height:x:y" \
+<output.mp4>
 ```
 
 For details about cropping with FFmpeg, [see this excellent guide](https://www.linuxuprising.com/2020/01/ffmpeg-how-to-crop-videos-with-examples.html).
@@ -216,13 +226,23 @@ FFmpeg will need to re-encode both video and audio to apply the fades, so this w
 If you want to apply differing amounts of fades to the audio and video, and/or to the start and end of the clip, you can use FFmpeg directly. The syntax is:
 
 ```sh
-ffmpeg -i <input.mp4> -vf fade=t=in:st=[starttime]:d=[duration] -af afade=t=in:st=[starttime]:d=[duration] fade=t=out:st=[starttime]:d=[duration] -af afade=t=out:st=[starttime]:d=[duration] <output.mp4>
+ffmpeg -i <input.mp4> \
+-vf fade=t=in:st=[starttime]:d=[duration] \
+-af afade=t=in:st=[starttime]:d=[duration] \
+fade=t=out:st=[starttime]:d=[duration] \
+-af afade=t=out:st=[starttime]:d=[duration] \
+<output.mp4>
 ```
 
 `[starttime]` and `[duration]` are specified in seconds. So, for instance, to set a video fade-in of 5 seconds, an audio fade-in of 2 seconds, a video fade-out of 10 seconds and an audio fade-out of 1 second you would do the following for a 64-second video (note you'll have to compute the fade-out start times yourself!):
 
 ```sh
-ffmpeg -i <input.mp4> -vf fade=t=in:st=0:d=5 -af afade=t=in:st=0:d=2 fade=t=out:st=54:d=10 -af afade=t=out:st=63:d=1 <output.mp4>
+ffmpeg -i <input.mp4> \
+-vf fade=t=in:st=0:d=5 \
+-af afade=t=in:st=0:d=2 \
+fade=t=out:st=54:d=10 \
+-af afade=t=out:st=63:d=1 \
+<output.mp4>
 ```
 
 ### Adding an image overlay
@@ -254,7 +274,9 @@ Generally watermarks should be transparent (unless you want a rectangular waterm
 You may want to create an overlay that covers the full video screen (while audio is playing). To do this, first determine the dimensions of your video:
 
 ```sh
-ffprobe -v quiet -print_format json -show_format -show_streams <input.mp4> | grep "\"width\"|\"height\""
+ffprobe -v quiet -print_format json -show_format -show_streams \
+<input.mp4> \
+| grep "\"width\"|\"height\""
 ```
 
 This will tell you the dimensions of the image you need to create, which should be a PNG.
@@ -262,7 +284,11 @@ This will tell you the dimensions of the image you need to create, which should 
 Then use FFmpeg to apply the image to the portion of the video you want to cover. For instance, to apply `slide.png` to `video.mp4` from 55 seconds to 1 minute 3 seconds, fading in for 1 second and out for 2 seconds (for a total of 8 seconds), you would use this command:
 
 ```sh
-ffmpeg -i video.mp4 -loop 1 -t 8 -i slide.png -filter_complex "[0:v][1:v] overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable=between(t\,52\,57)" video-with-overlay.mp4
+ffmpeg -i video.mp4 -loop 1 \
+-t 8 \
+-i slide.png \
+-filter_complex "[0:v][1:v] overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable=between(t\,52\,57)" \
+video-with-overlay.mp4
 ```
 
 Using FFmpeg's `main_w-overlay` and `main_h-overlay` values allows us to position the image in the center automatically, so you could also use this to overlay an image in the center that does not fully cover the video.
@@ -276,7 +302,10 @@ Instead of using images, you can write text directly onto the video.
 For instance, to write `www.BellsOfTheCascades.org` using the BOC font, onto `video.mp4` between 30 seconds and 40 seconds, you would use this command, where `path/to/font.ttf` is the full path to the font file on your system:
 
 ```sh
-ffmpeg -i video.mp4 -vf "drawtext=fontfile=path/to/font.ttf:text='www.BellsOfTheCascades.org':fontcolor=white:fontsize=150:x=(w-text_w)/2:y=h-th-250:enable='between(t,46,49)'" -codec:a copy part2-faded-overlaid.mp4
+ffmpeg -i video.mp4 \
+-vf "drawtext=fontfile=path/to/font.ttf:text='www.BellsOfTheCascades.org':fontcolor=white:fontsize=150:x=(w-text_w)/2:y=h-th-250:enable='between(t,46,49)'" -\
+codec:a copy \
+part2-faded-overlaid.mp4
 ```
 
 You can play with the size (`fontsize`) and positioning (`x`, `y`) to achieve the effect you want. If you want to have the text appear for the full duration of the video, leave off the `:enable='...'` portion.
