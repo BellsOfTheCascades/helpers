@@ -323,9 +323,31 @@ Using FFmpeg's `main_w-overlay` and `main_h-overlay` values allows us to positio
 
 There are ways to fade-in and fade-out overlays, as well as applying overlays without transparency (like JPEGs) but the syntax starts to get complicated. Some examples: [1](https://stackoverflow.com/questions/38633369/how-to-add-a-fade-in-within-overlay-with-ffmpeg) [2](https://gist.github.com/sevitz/7872378), [3](https://stackoverflow.com/questions/72014088/ffmpeg-lavfi-is-it-possible-to-fade-out-an-image-overlay-that-was-loaded-with-a), [4](https://superuser.com/questions/881002/how-can-i-avoid-a-black-background-when-fading-in-an-overlay-with-ffmpeg), [5](https://superuser.com/questions/1201524/ffmpeg-overlay-image-on-video-with-fade-effect)
 
+#### Adding semitransparent color overlays
+
+Frequently, if you're [adding text overlays](#adding-text-overlays), you'll want some shading (or lightening) behind the text so that the text is readable. For that, use [FFmpeg's `drawbox`](https://ffmpeg.org/ffmpeg-filters.html#drawbox).
+
+Here are some examples. You can [test different values using `ffplay`](#testing-advanced-video-filters).
+
+Add a 50% opacity black bar across the bottom of the video:
+
+```sh
+ffmpeg -i <input.mp4> -vf "format=yuv444p,drawbox=y=ih/1.45:color=black@0.5:t=fill,format=yuv420p" <output.mp4>
+```
+
+Add a 40% opacity blue bar with the [golden ratio (phi)](https://en.wikipedia.org/wiki/Golden_ratio) height across the bottom of the video:
+
+```sh
+ffmpeg -i <input.mp4> -vf "format=yuv444p,drawbox=y=ih/PHI:color=blue@0.4:t=fill,format=yuv420p" <output.mp4>
+```
+
+The two wrapping `format` statements are to ensure the color is semitransparent regardless of the type of video.
+
+`drawbox` can be used in conjunction with other filters such as `drawtext`, but is shown here on its own for clarity.
+
 #### Adding text overlays
 
-Instead of using images, you can write text directly onto the video.
+FFmpeg allows you to write text directly onto the video.
 
 For instance, to write `www.BellsOfTheCascades.org` using the BOC font, onto `video.mp4` between 30 seconds and 40 seconds, you would use this command, where `path/to/font.ttf` is the full path to the font file on your system:
 
